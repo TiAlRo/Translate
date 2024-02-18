@@ -1,5 +1,0 @@
-{
-    "scripts": {
-        "dev": "set TLS_KEY_PATH=C:/Users/rose/privkey.pem& set TLS_CERT_PATH=C:/Users/rose/cacert.pem& node index"
-    }
-}
