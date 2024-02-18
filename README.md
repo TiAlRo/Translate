@@ -17,4 +17,4 @@ To start the client, type `node Client` into a cmd.
 
 ## Restrictions ##
 
-Currently, speech is translated only from `de-CH` to `uk`.
+Currently, the server is reachable from the client only via the URL https://localhost:8443 and speech is translated only from `de-CH` to `uk`.
