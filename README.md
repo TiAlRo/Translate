@@ -15,6 +15,8 @@ To start the server on Windows, type the following line into a cmd:
 
 To start the client, type `node Client` into a cmd.
 
+Translations are available via HTTPS requests to the server's port 8443 at the path `/getTranslation` (e.g., via https://localhost:8443/getTranslation).
+
 ## Restrictions ##
 
 Currently, the server is reachable from the client only via the URL https://localhost:8443 and speech is translated only from `de-CH` to `uk`.
