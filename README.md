@@ -5,7 +5,7 @@ This project contains
 
 ## Prerequisites ##
 
-Node.js must be installed on both the client and the server.
+Node.js must be installed on both the client and the server. Google Cloud Speech-to-Text and Translation AI have to be available from the server, i.e., the credentials to access these API must be accessible from node (see Google Cloud's [Set up Application Default Credentials](https://cloud.google.com/docs/authentication/provide-credentials-adc)).
 
 ## Usage ##
 
