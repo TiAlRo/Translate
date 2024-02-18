@@ -25,6 +25,7 @@ let translatedSpeechStream
 
 function createTranslatedSpeechStream(readableStream) {
   console.log('incoming audio')
+  readableStream.on('error', (error) => { console.log(`incoming audio: ${error}`) })
   const speechClient = new speech.SpeechClient()
   const recognizeStream = speechClient.streamingRecognize({ config: { encoding: speech.protos.google.cloud.speech.v1.RecognitionConfig.AudioEncoding.LINEAR16, languageCode: 'de-CH', sampleRateHertz: 16000 } })
   const translateStream = new TranslateStream()
