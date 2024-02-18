@@ -11,7 +11,9 @@ Node.js must be installed on both the client and the server. Google Cloud Speech
 
 To start the server on Windows, type the following line into a cmd:
 
-`set TLS_KEY_PATH=<Path to TLS Key>& set TLS_CERT_PATH=<Path to TLS Certificate>& node Server/index `
+`set TLS_KEY_PATH=<Path to TLS Key>& set TLS_CERT_PATH=<Path to TLS Certificate>& node Server`
+
+To start the client, type `node Client` into a cmd.
 
 ## Restrictions ##
 
