@@ -5,7 +5,7 @@ const {
 } = http2.constants
 const { Translate } = require('@google-cloud/translate').v2
 const speech = require('@google-cloud/speech')
-const { Transform } = require('stream')
+const { Transform, finished } = require('stream')
 
 class TranslateStream extends Transform {
   constructor(opt) {
@@ -22,15 +22,40 @@ class TranslateStream extends Transform {
 }
 
 let translatedSpeechStream
+let audioStream
+const translationClients = []
+let timerId
+let recognizeStream
 
-function createTranslatedSpeechStream(readableStream) {
-  console.log('incoming audio')
-  readableStream.on('error', (error) => { console.log(`incoming audio: ${error}`) })
+function createTranslatedSpeechStream() {
+  // audioStream.unpipe(recognizeStream) gibt Fehler. Rufen mehrere recognizeStream ohne unpipe ständig die API auf? Ziel von unpipe: Warnung für viele EventListener vermeiden
+  if (translatedSpeechStream) {
+    translatedSpeechStream.end()
+  }
+  console.log('creating TranslatedSpeechStream')
   const speechClient = new speech.SpeechClient()
-  const recognizeStream = speechClient.streamingRecognize({ config: { encoding: speech.protos.google.cloud.speech.v1.RecognitionConfig.AudioEncoding.LINEAR16, languageCode: 'de-CH', sampleRateHertz: 16000 } })
+  recognizeStream = speechClient.streamingRecognize({ config: { encoding: speech.protos.google.cloud.speech.v1.RecognitionConfig.AudioEncoding.LINEAR16, languageCode: 'de-CH', sampleRateHertz: 16000 } }).on('data', data =>
+    process.stdout.write(
+      data.results[0] && data.results[0].alternatives[0]
+        ? `Transcription: ${data.results[0].alternatives[0].transcript}\n`
+        : '\n\nReached transcription time limit, press Ctrl+C\n'
+    ))
+
   const translateStream = new TranslateStream()
-  const recognizedSpeechStream = readableStream.pipe(recognizeStream)
+  const recognizedSpeechStream = audioStream.pipe(recognizeStream)
   translatedSpeechStream = recognizedSpeechStream.pipe(translateStream)
+  translationClients.forEach((client) => { translatedSpeechStream.pipe(client, { end: false }) })
+  timerId = setTimeout(createTranslatedSpeechStream, 10000)
+}
+
+function setAudioStream(readableStream) {
+  console.log('incoming audio')
+  clearTimeout(timerId)
+  audioStream = readableStream
+  finished(audioStream, () => {
+    clearTimeout(timerId)
+  })
+  createTranslatedSpeechStream()
 }
 
 function pipeTranslatedSpeechStream(writableStream) {
@@ -38,7 +63,10 @@ function pipeTranslatedSpeechStream(writableStream) {
   writableStream.respond({
     'content-type': 'text/event-stream; charset=utf-8'
   })
-  translatedSpeechStream.pipe(writableStream)
+  translationClients.push(writableStream)
+  if (translatedSpeechStream) {
+    translatedSpeechStream.pipe(writableStream, { end: false })
+  }
 }
 
 const tlsKey = fs.readFileSync(process.env.TLS_KEY_PATH)
@@ -49,7 +77,7 @@ const server = http2.createSecureServer({
 })
 server.on('stream', (stream, headers) => {
   switch (headers[HTTP2_HEADER_PATH]) {
-    case '/sendAudio': createTranslatedSpeechStream(stream)
+    case '/sendAudio': setAudioStream(stream)
       break
     case '/getTranslation': pipeTranslatedSpeechStream(stream)
   }
