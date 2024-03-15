@@ -7,6 +7,8 @@ This project contains
 
 Node.js must be installed on both the audio client and the server. Google Cloud Speech-to-Text and Translation AI have to be available from the server, i.e., the credentials to access these API must be accessible from node (see Google Cloud's [Set up Application Default Credentials](https://cloud.google.com/docs/authentication/provide-credentials-adc)).
 
+To install the server dependencies, run `npm i` in the server's directory.
+
 ## Usage ##
 
 To start the server on Windows, type the following line into a cmd:
