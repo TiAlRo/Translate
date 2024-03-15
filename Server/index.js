@@ -69,12 +69,8 @@ function pipeTranslatedSpeechStream(writableStream) {
   }
 }
 
-const tlsKey = fs.readFileSync(process.env.TLS_KEY_PATH)
-const tlsCert = fs.readFileSync(process.env.TLS_CERT_PATH)
-const server = http2.createSecureServer({
-  key: tlsKey,
-  cert: tlsCert
-})
+const pfx = fs.readFileSync(process.env.PFX_PATH)
+const server = http2.createSecureServer({pfx, passphrase: 'password!'})
 server.on('stream', (stream, headers) => {
   switch (headers[HTTP2_HEADER_PATH]) {
     case '/sendAudio': setAudioStream(stream)
