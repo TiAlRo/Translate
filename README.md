@@ -9,7 +9,7 @@ Node.js must be installed on both the audio client and the server. Google Cloud 
 
 To install the dependencies, run `npm i` in both the server's and the client's directory.
 
-On the client, [SoX](http://sox.sourceforge.net/) must be installed:
+On the client, [SoX](http://sox.sourceforge.net/) must be installed and it must be available in the `$PATH` environment variable:
 
 For Mac OS:
 `brew install sox`
