@@ -20,6 +20,8 @@ For most linux disto's:
 For Windows:
 [download the binaries](http://sourceforge.net/projects/sox/files/latest/download)
 
+On Windows 11, there must be a system variable `AUDIODRIVER` with the value `waveaudio`.
+
 ## Usage ##
 
 To start the server on Windows, type the following line into a cmd:
